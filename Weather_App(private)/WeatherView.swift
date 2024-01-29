@@ -25,9 +25,23 @@ struct WeatherView: View {
                 
                 List(feedModel.wData, id: \.timezone) { weatherData in
                     
-                    let weeklytemp: [Double] = weatherData.daily.temperature_2m_max
-                    let weeklydays: [String] = weatherData.daily.time
-                    let totalWeek = Array(zip(weeklydays, weeklytemp))
+                    let weeklyForecast = weatherData.daily.time.indices.map { index -> DailyWeather in
+                                        let isoFormatter = ISO8601DateFormatter()
+                                        isoFormatter.formatOptions = [.withFullDate]
+                                        let date = isoFormatter.date(from: weatherData.daily.time[index]) ?? Date()
+                                        
+                                        let dayFormatter = DateFormatter()
+                                        // Formaterar datumet till "29 Jan"
+                                        dayFormatter.dateFormat = "d MMM"
+                                        let dayString = dayFormatter.string(from: date)
+                                        
+                                        let weekdayFormatter = DateFormatter()
+                                        // Hämtar veckodagen, t.ex. "Monday"
+                                        weekdayFormatter.dateFormat = "EEEE"
+                                        let weekdayString = weekdayFormatter.string(from: date)
+                                        
+                                        return DailyWeather(day: "\(dayString)\n\(weekdayString)", maxTemperature: weatherData.daily.temperature_2m_max[index])
+                                    }
                     
                     VStack(alignment: .leading, spacing: 10) {
                         
@@ -58,23 +72,41 @@ struct WeatherView: View {
                     
                     
                     Text("7-days forecast").listRowBackground(Color.clear).bold().font(.largeTitle).foregroundColor(.white)
+                    
+                    
                     TabView {
                         
-                        ForEach(totalWeek, id: \.0) { day, temp in
-                            VStack {
-                                Text(day).foregroundColor(.white)
+                        
+                        
+                        ForEach(weeklyForecast) { forecast in
+                            
+                            
+                            
+                            HStack(alignment: .center) {
+                                Text(forecast.day.components(separatedBy: "\n").last ?? "")
+                                .foregroundColor(.white)
                                 Spacer()
-                                Text("  " + "\(String(format: "%.1f", temp))°C")
-                                    .frame(maxWidth: 250, maxHeight: 150).foregroundColor(.white)
+                                Text(String(format: "%.1f°C", forecast.maxTemperature))
+                                .foregroundColor(.white)
                                 Spacer()
+                                Text(forecast.day.components(separatedBy: "\n").first ?? "")
+                                .foregroundColor(.white)
+                                
                                 
                             }
                             .padding()
                         }
+                        
+                        
+                        
                     }.shadow(color: .red ,radius: 3, x: 2, y:20)
                     .listRowBackground(Color.clear)
                     .tabViewStyle(PageTabViewStyle())
                     .frame(height: 100)
+                    
+                    
+                    
+                    
                 }
                 .listStyle(PlainListStyle())
                 .toolbar{
@@ -127,6 +159,7 @@ struct WeatherView: View {
             }
         }
     }
+
 
 
 
