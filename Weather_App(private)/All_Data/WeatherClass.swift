@@ -15,6 +15,7 @@ import WidgetKit
 class FeedModel {
     var wData: [WeatherData] = []
     var isLoading = false
+   
 
     func loadFeed(lat: Double, long: Double) async {
         guard let url = URL(string: "https://api.open-meteo.com/v1/forecast?latitude=\(lat)&longitude=\(long)&current=temperature_2m&daily=temperature_2m_max") else {
@@ -38,6 +39,6 @@ class FeedModel {
         }
         isLoading = false
     }
+    
 
 }
-

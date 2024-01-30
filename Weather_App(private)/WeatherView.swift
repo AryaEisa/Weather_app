@@ -7,134 +7,98 @@
 
 import SwiftUI
 import WidgetKit
+import MapKit
+
+
+
 
 struct WeatherView: View {
     var feedModel: FeedModel = FeedModel()
     var locationManager = LocationManager()
-
+    @State private var locationService = LocationManager()
+    
     init() {
         locationManager.feedModel = feedModel
     }
     @State private var isRotating = 0.0
     var body: some View {
-        VStack{
             
-        NavigationStack {
-           
             
-                
+            NavigationStack {
+            VStack{
                 List(feedModel.wData, id: \.timezone) { weatherData in
-                    
                     let weeklyForecast = weatherData.daily.time.indices.map { index -> DailyWeather in
-                                        let isoFormatter = ISO8601DateFormatter()
-                                        isoFormatter.formatOptions = [.withFullDate]
-                                        let date = isoFormatter.date(from: weatherData.daily.time[index]) ?? Date()
-                                        
-                                        let dayFormatter = DateFormatter()
-                                        // Formaterar datumet till "29 Jan"
-                                        dayFormatter.dateFormat = "d MMM"
-                                        let dayString = dayFormatter.string(from: date)
-                                        
-                                        let weekdayFormatter = DateFormatter()
-                                        // Hämtar veckodagen, t.ex. "Monday"
-                                        weekdayFormatter.dateFormat = "EEEE"
-                                        let weekdayString = weekdayFormatter.string(from: date)
-                                        
-                                        return DailyWeather(day: "\(dayString)\n\(weekdayString)", maxTemperature: weatherData.daily.temperature_2m_max[index])
-                                    }
-                    
+                        let isoFormatter = ISO8601DateFormatter()
+                        isoFormatter.formatOptions = [.withFullDate]
+                        let date = isoFormatter.date(from: weatherData.daily.time[index]) ?? Date()
+                        let dateFormatter = DateFormatter()
+                        dateFormatter.dateFormat = "d MMM\nEEEE"
+                        let dayString = dateFormatter.string(from: date)
+                        let maxTemperature = weatherData.daily.temperature_2m_max[index]
+                        return DailyWeather(day: dayString, maxTemperature: maxTemperature)
+                    }
                     VStack(alignment: .leading, spacing: 10) {
-                        
                         HStack{
-                            Text("Time Zone: ").bold().foregroundColor(.white)
-                            Text(weatherData.timezone).foregroundColor(.white)
-                            
+                            Text("Time Zone: ").bold().foregroundColor(.black)
+                            Text(weatherData.timezone).foregroundColor(.black)
                         }
-                        
                         HStack {
-                            Text("City: ").font(.headline).bold().foregroundColor(.white)
-                            Text(locationManager.cityname).foregroundColor(.white)
+                            Text("City: ").font(.headline).bold().foregroundColor(.black)
+                            Text(locationManager.cityname).foregroundColor(.black)
                         }
-                        
                         HStack{
-                            Text("Time: ").bold().foregroundColor(.white)
-                            Text("\(weatherData.current.time)").foregroundColor(.white)
-                            
+                            Text("Time: ").bold().foregroundColor(.black)
+                            Text("\(weatherData.current.time)").foregroundColor(.black)
                         }
-                        
                         HStack{
-                            Text("Temperature: ").bold().foregroundColor(.white)
-                            Text("\(String(format: "%.1f", weatherData.current.temperature_2m)) °C").foregroundColor(.white)
+                            Text("Temperature: ").bold().foregroundColor(.black)
+                            Text("\(String(format: "%.1f", weatherData.current.temperature_2m)) °C").foregroundColor(.black)
                         }
-                        
                     }.listRowBackground(Color.clear)
-                        .shadow(color: .red, radius: 1, x:2, y:2)
-                    
-                    
-                    Text("7-days forecast").listRowBackground(Color.clear).bold().font(.largeTitle).foregroundColor(.white)
-                    
-                    
+                       
+                    Text("7-days forecast").listRowBackground(Color.clear).bold().font(.largeTitle).foregroundColor(.black)
                     TabView {
-                        
-                        
-                        
                         ForEach(weeklyForecast) { forecast in
-                            
-                            
-                            
                             HStack(alignment: .center) {
                                 Text(forecast.day.components(separatedBy: "\n").last ?? "")
-                                .foregroundColor(.white)
+                                    .foregroundColor(.black)
                                 Spacer()
                                 Text(String(format: "%.1f°C", forecast.maxTemperature))
-                                .foregroundColor(.white)
+                                    .foregroundColor(.black)
                                 Spacer()
                                 Text(forecast.day.components(separatedBy: "\n").first ?? "")
-                                .foregroundColor(.white)
-                                
-                                
+                                    .foregroundColor(.black)
                             }
                             .padding()
                         }
-                        
-                        
-                        
-                    }.shadow(color: .red ,radius: 3, x: 2, y:20)
-                    .listRowBackground(Color.clear)
-                    .tabViewStyle(PageTabViewStyle())
-                    .frame(height: 100)
+                    }                        .listRowBackground(Color.clear)
+                        .tabViewStyle(PageTabViewStyle())
+                        .frame(height: 100)
                     
                     
-                    
-                    
-                }
+                                        }
                 .listStyle(PlainListStyle())
                 .toolbar{
                     ToolbarItem(placement: .principal){
-                        VStack{
-                            Spacer().padding()
-                            HStack{
-                                
+                        HStack{
+                            Spacer()
+                            
                                 Image(.globe)
-                                    
                                     .resizable()
-                                    .frame(width: 100, height: 100)
+                                    .frame(width: 90, height: 60)
                                     .clipShape(Circle())
                                     .rotationEffect(.degrees(isRotating))
                                     .colorMultiply(.blue)
-                            }.listRowBackground(Color.clear).padding()
-                                
-                                .onAppear{
+                            }.shadow(color: .red ,radius: 70, x: 60, y:60)
+                            .onAppear{
                                 withAnimation(.linear(duration: 0.5)
                                     .speed(0.01).repeatForever(autoreverses: false)){
                                         isRotating = 360.0
                                     }
                             }
-                        }.shadow(color: .red ,radius: 90, x: 20, y:20)
+                        
                     }
                 }
-                
-                
                 .onAppear {
                     Task {
                         locationManager.requestLocation()
@@ -145,27 +109,43 @@ struct WeatherView: View {
                             userDefaults?.set(temp, forKey: "currentTemp")
                             WidgetCenter.shared.reloadAllTimelines()
                             }
-                        
                         }
-                    }.background{
-                        Image(.background)
-                            .resizable()
-                            .aspectRatio(contentMode: .fit)
-                            .edgesIgnoringSafeArea(.all)
-                            .frame(width: 10000, height: 1000)
-                            .colorMultiply(.blue)
                     }
+                VStack {
+                    
+                    if let location = locationService.location {
+                        let startPosition = MapCameraPosition.region(
+                            MKCoordinateRegion(
+                                center: CLLocationCoordinate2D(latitude: location.coordinate.latitude, longitude: location.coordinate.longitude),
+                                span: MKCoordinateSpan(latitudeDelta: 0.5, longitudeDelta: 0.5)
+                            )
+                        )
+                        Map(initialPosition: startPosition)
+                            .mapStyle(.hybrid)
+                            .onTapGesture { position in
+                                print("Tapped at \(position)")
+                            }
+                    } else {
+                        Text("")
+                        //print("something is wrong")
+                    }
+                }.clipShape(/*@START_MENU_TOKEN@*/Circle()/*@END_MENU_TOKEN@*/)
+                
+                .padding()
+                .onAppear {
+                    locationService.requestLocation()
                 }
+                .refreshable {
+                    locationService.requestLocation()
+                }
+            }.background(
+                LinearGradient(gradient: Gradient(colors: [.white, .blue]), startPoint: .top, endPoint: .bottom)
+            )
             }
         }
     }
 
-
-
-
-
-
-
+        
 #Preview {
     WeatherView()
 }

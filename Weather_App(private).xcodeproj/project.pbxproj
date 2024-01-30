@@ -56,7 +56,6 @@
 		0DFB9CA52B680EF5001A2762 /* WeatherView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WeatherView.swift; sourceTree = "<group>"; };
 		0DFB9CA72B680F10001A2762 /* background.jpg */ = {isa = PBXFileReference; lastKnownFileType = image.jpeg; path = background.jpg; sourceTree = "<group>"; };
 		0DFB9CA92B680F15001A2762 /* globe..jpeg */ = {isa = PBXFileReference; lastKnownFileType = image.jpeg; path = globe..jpeg; sourceTree = "<group>"; };
-		0DFB9CAB2B680F9E001A2762 /* Weather-App-private--Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist; path = "Weather-App-private--Info.plist"; sourceTree = SOURCE_ROOT; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -109,7 +108,6 @@
 		0DFB9C742B680D20001A2762 /* Weather_App(private) */ = {
 			isa = PBXGroup;
 			children = (
-				0DFB9CAB2B680F9E001A2762 /* Weather-App-private--Info.plist */,
 				0DFB9CAC2B6810B9001A2762 /* All_Data */,
 				0DFB9C752B680D20001A2762 /* Weather_App_private_App.swift */,
 				0DFB9CA52B680EF5001A2762 /* WeatherView.swift */,
@@ -461,8 +459,7 @@
 				GENERATE_INFOPLIST_FILE = YES;
 				INFOPLIST_FILE = "Weather-App-private--Info.plist";
 				INFOPLIST_KEY_LSApplicationCategoryType = "";
-				INFOPLIST_KEY_NSLocalNetworkUsageDescription = "";
-				INFOPLIST_KEY_NSLocationAlwaysAndWhenInUseUsageDescription = "Location Access";
+				INFOPLIST_KEY_NSLocalNetworkUsageDescription = Location;
 				INFOPLIST_KEY_NSLocationAlwaysUsageDescription = "";
 				INFOPLIST_KEY_UIApplicationSceneManifest_Generation = YES;
 				INFOPLIST_KEY_UIApplicationSupportsIndirectInputEvents = YES;
@@ -495,8 +492,7 @@
 				GENERATE_INFOPLIST_FILE = YES;
 				INFOPLIST_FILE = "Weather-App-private--Info.plist";
 				INFOPLIST_KEY_LSApplicationCategoryType = "";
-				INFOPLIST_KEY_NSLocalNetworkUsageDescription = "";
-				INFOPLIST_KEY_NSLocationAlwaysAndWhenInUseUsageDescription = "Location Access";
+				INFOPLIST_KEY_NSLocalNetworkUsageDescription = Location;
 				INFOPLIST_KEY_NSLocationAlwaysUsageDescription = "";
 				INFOPLIST_KEY_UIApplicationSceneManifest_Generation = YES;
 				INFOPLIST_KEY_UIApplicationSupportsIndirectInputEvents = YES;

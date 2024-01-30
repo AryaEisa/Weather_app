@@ -8,6 +8,7 @@
 import Foundation
 import CoreLocation
 import Observation
+import MapKit
 
 @Observable
 class LocationManager: NSObject, ObservableObject, CLLocationManagerDelegate {
