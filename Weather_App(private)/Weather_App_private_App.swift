@@ -1,14 +1,14 @@
 //
-//  Weather_App_private_App.swift
-//  Weather_App(private)
+//  weatherApp_swiftApp.swift
+//  weatherApp.swift
 //
-//  Created by Arya Pour Eisa on 2024-01-29.
+//  Created by Arya Pour Eisa on 2024-01-22.
 //
 
 import SwiftUI
 
 @main
-struct Weather_App_private_App: App {
+struct weatherApp_swiftApp: App {
     var body: some Scene {
         WindowGroup {
             ContentView()

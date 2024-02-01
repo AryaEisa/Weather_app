@@ -1,8 +1,8 @@
 //
 //  WeatherClass.swift
-//  Weather_App(private)
+//  weatherApp.swift
 //
-//  Created by Arya Pour Eisa on 2024-01-29.
+//  Created by Arya Pour Eisa on 2024-01-26.
 //
 
 import Foundation
@@ -10,13 +10,12 @@ import SwiftUI
 import Observation
 import WidgetKit
 
-
 @Observable
 class FeedModel {
     var wData: [WeatherData] = []
     var isLoading = false
-   
-
+    var dailyWeather: [DailyWeather] = []
+    
     func loadFeed(lat: Double, long: Double) async {
         guard let url = URL(string: "https://api.open-meteo.com/v1/forecast?latitude=\(lat)&longitude=\(long)&current=temperature_2m&daily=temperature_2m_max") else {
             return
@@ -39,6 +38,5 @@ class FeedModel {
         }
         isLoading = false
     }
-    
 
 }

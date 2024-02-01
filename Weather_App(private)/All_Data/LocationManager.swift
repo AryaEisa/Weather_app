@@ -1,9 +1,9 @@
 //
 //  LocationManager.swift
-//  Weather_App(private)
+//  weatherApp.swift
 //
-//  Created by Arya Pour Eisa on 2024-01-29.
-//test
+//  Created by Arya Pour Eisa on 2024-01-24.
+//
 
 import Foundation
 import CoreLocation

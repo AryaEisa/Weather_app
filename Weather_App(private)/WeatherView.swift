@@ -1,8 +1,8 @@
 //
 //  WeatherView.swift
-//  Weather_App(private)
+//  weatherApp.swift
 //
-//  Created by Arya Pour Eisa on 2024-01-29.
+//  Created by Arya Pour Eisa on 2024-01-25.
 //
 
 import SwiftUI
@@ -16,40 +16,32 @@ struct WeatherView: View {
     var feedModel: FeedModel = FeedModel()
     var locationManager = LocationManager()
     @State private var locationService = LocationManager()
+    private var ffeedModel = FeedModel()
+   
     
     init() {
         locationManager.feedModel = feedModel
     }
     @State private var isRotating = 0.0
     var body: some View {
-            
-            
             NavigationStack {
             VStack{
                 List(feedModel.wData, id: \.timezone) { weatherData in
-                    let weeklyForecast = weatherData.daily.time.indices.map { index -> DailyWeather in
-                        let isoFormatter = ISO8601DateFormatter()
-                        isoFormatter.formatOptions = [.withFullDate]
-                        let date = isoFormatter.date(from: weatherData.daily.time[index]) ?? Date()
-                        let dateFormatter = DateFormatter()
-                        dateFormatter.dateFormat = "d MMM\nEEEE"
-                        let dayString = dateFormatter.string(from: date)
-                        let maxTemperature = weatherData.daily.temperature_2m_max[index]
-                        return DailyWeather(day: dayString, maxTemperature: maxTemperature)
+                    HStack(alignment: .center, spacing: 2){
+                        Text("Time Zone: ").bold().foregroundColor(.black)
+                        Text(weatherData.timezone).foregroundColor(.black).padding()
                     }
                     VStack(alignment: .leading, spacing: 10) {
                         HStack{
-                            Text("Time Zone: ").bold().foregroundColor(.black)
-                            Text(weatherData.timezone).foregroundColor(.black)
+                            Text("Time: ").bold().foregroundColor(.black)
+                            Text(weatherData.formattedTime)
                         }
+                        
                         HStack {
                             Text("City: ").font(.headline).bold().foregroundColor(.black)
                             Text(locationManager.cityname).foregroundColor(.black)
                         }
-                        HStack{
-                            Text("Time: ").bold().foregroundColor(.black)
-                            Text("\(weatherData.current.time)").foregroundColor(.black)
-                        }
+                        
                         HStack{
                             Text("Temperature: ").bold().foregroundColor(.black)
                             Text("\(String(format: "%.1f", weatherData.current.temperature_2m)) °C").foregroundColor(.black)
@@ -57,26 +49,23 @@ struct WeatherView: View {
                     }.listRowBackground(Color.clear)
                        
                     Text("7-days forecast").listRowBackground(Color.clear).bold().font(.largeTitle).foregroundColor(.black)
-                    TabView {
-                        ForEach(weeklyForecast) { forecast in
-                            HStack(alignment: .center) {
-                                Text(forecast.day.components(separatedBy: "\n").last ?? "")
-                                    .foregroundColor(.black)
-                                Spacer()
-                                Text(String(format: "%.1f°C", forecast.maxTemperature))
-                                    .foregroundColor(.black)
-                                Spacer()
-                                Text(forecast.day.components(separatedBy: "\n").first ?? "")
-                                    .foregroundColor(.black)
+                    
+                        TabView {
+                            ForEach(0..<7) { index in
+                                
+                                HStack {
+                                    
+                                    Text(weatherData.daily.formattedDayofWeek(forIndex: index))
+                                    Spacer()
+                                    Text("\(weatherData.daily.temperature_2m_max[index], specifier: "%.1f")°C")
+                                    
+                                }.listRowBackground(Color.clear)
+                                
                             }
-                            .padding()
-                        }
-                    }                        .listRowBackground(Color.clear)
-                        .tabViewStyle(PageTabViewStyle())
-                        .frame(height: 100)
-                    
-                    
-                                        }
+                            Spacer()
+                        }.tabViewStyle(PageTabViewStyle()).listRowBackground(Color.clear)
+
+                    }
                 .listStyle(PlainListStyle())
                 .toolbar{
                     ToolbarItem(placement: .principal){
@@ -96,7 +85,6 @@ struct WeatherView: View {
                                         isRotating = 360.0
                                     }
                             }
-                        
                     }
                 }
                 .onAppear {
@@ -112,7 +100,6 @@ struct WeatherView: View {
                         }
                     }
                 VStack {
-                    
                     if let location = locationService.location {
                         let startPosition = MapCameraPosition.region(
                             MKCoordinateRegion(
@@ -127,10 +114,8 @@ struct WeatherView: View {
                             }
                     } else {
                         Text("")
-                        //print("something is wrong")
                     }
                 }.clipShape(/*@START_MENU_TOKEN@*/Circle()/*@END_MENU_TOKEN@*/)
-                
                 .padding()
                 .onAppear {
                     locationService.requestLocation()
@@ -139,13 +124,12 @@ struct WeatherView: View {
                     locationService.requestLocation()
                 }
             }.background(
-                LinearGradient(gradient: Gradient(colors: [.white, .blue]), startPoint: .top, endPoint: .bottom)
-            )
+                LinearGradient(gradient: Gradient(colors: [.white, .blue]), startPoint: .top, endPoint: .bottom))
             }
         }
     }
 
-        //test
+        
 #Preview {
     WeatherView()
 }
