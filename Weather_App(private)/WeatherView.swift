@@ -26,50 +26,125 @@ struct WeatherView: View {
     var body: some View {
             NavigationStack {
             VStack{
-                List(feedModel.wData, id: \.timezone) { weatherData in
-                    HStack(alignment: .center, spacing: 2){
-                        Text("Time Zone: ").bold().foregroundColor(.black)
-                        Text(weatherData.timezone).foregroundColor(.black).padding()
-                    }
-                    VStack(alignment: .leading, spacing: 10) {
-                        HStack{
+                
+                List(feedModel.wData, id: \.timezone)
+                { weatherData in
+                    
+                    VStack(alignment: .leading, spacing: 10)
+                    {
+                        
+                        HStack
+                        {
                             Text("Time: ").bold().foregroundColor(.black)
                             Text(weatherData.formattedTime)
                         }
                         
-                        HStack {
+                        HStack
+                        {
                             Text("City: ").font(.headline).bold().foregroundColor(.black)
                             Text(locationManager.cityname).foregroundColor(.black)
                         }
                         
-                        HStack{
+                        HStack
+                        {
                             Text("Temperature: ").bold().foregroundColor(.black)
                             Text("\(String(format: "%.1f", weatherData.current.temperature_2m)) °C").foregroundColor(.black)
+                            Text(emojiForWeatherCode(weatherData.current.weather_code)).bold().font(.title).background(Color.gray).clipShape(Circle())
                         }
-                    }.listRowBackground(Color.clear)
-                       
-                    Text("7-days forecast").listRowBackground(Color.clear).bold().font(.largeTitle).foregroundColor(.black)
+                    }
+                    .listRowBackground(Color.clear)
                     
+                    
+                        
+                        ZStack{
+                            HStack
+                            {
+                                Text("Time Zone")
+                                    .bold()
+                                    .foregroundColor(.black)
+                                    .listRowBackground(Color.clear)
+                                    .font(.system(size: 16, weight: .bold, design: .monospaced))
+                                Spacer()
+                            }
+                            HStack
+                            {
+                                Text(":")
+                            }
+                            HStack
+                            {
+                                Spacer()
+                                Text(weatherData.timezone)
+                                    .foregroundColor(.black)
+                                    .padding()
+                                    .listRowBackground(Color.clear)
+                                    .font(.system(size: 16, weight: .bold, design: .monospaced))
+                                
+                            }
+                            
+                        }
+                       
+                        
+                        
+                    
+                    
+                    .listRowBackground(Color.clear)
+                    
+                    
+                    ZStack{
+                        HStack{
+                            Text("")
+                            Spacer()
+                        }
+                        
+                        HStack{
+                            Text("7-days forecast")
+                                .toolbarTitleDisplayMode(.inline)
+                                .listRowBackground(Color.clear)
+                                .bold()
+                                .font(.largeTitle)
+                                .foregroundColor(.black)
+                                
+                        }
+                        HStack{
+                            Spacer()
+                            Text("")
+                        }
+                        
+                        
+                    } .listRowBackground(Color.clear)
                         TabView {
                             ForEach(0..<7) { index in
                                 
                                 HStack {
                                     
-                                    Text(weatherData.daily.formattedDayofWeek(forIndex: index))
-                                    Spacer()
-                                    Text("\(weatherData.daily.temperature_2m_max[index], specifier: "%.1f")°C")
+                                    Text(weatherData.daily.formattedDayOfWeek(forIndex: index))
                                     
-                                }.listRowBackground(Color.clear)
+                                    Spacer()
+                                    Text(emojiForWeatherCode(weatherData.daily.weather_code[index])).background(Color.gray).clipShape(Circle())
+                                    Spacer()
+                                    Text("\(weatherData.daily.temperature_2m_max[index], specifier: "%.1f")°C").font(.title).bold()
+                                    
+                                    
+                                    
+                                }
+                                .listRowBackground(Color.clear)
                                 
                             }
-                            Spacer()
-                        }.tabViewStyle(PageTabViewStyle()).listRowBackground(Color.clear)
+                            
+                            //Spacer()
+                            
+                        }
+                        .tabViewStyle(PageTabViewStyle())
+                        .listRowBackground(Color.clear)
+                        .frame(minHeight: 80)
 
                     }
                 .listStyle(PlainListStyle())
                 .toolbar{
-                    ToolbarItem(placement: .principal){
-                        HStack{
+                    ToolbarItem(placement: .principal)
+                    {
+                        HStack
+                        {
                             Spacer()
                             
                                 Image(.globe)
@@ -78,58 +153,75 @@ struct WeatherView: View {
                                     .clipShape(Circle())
                                     .rotationEffect(.degrees(isRotating))
                                     .colorMultiply(.blue)
-                            }.shadow(color: .red ,radius: 70, x: 60, y:60)
-                            .onAppear{
-                                withAnimation(.linear(duration: 0.5)
-                                    .speed(0.01).repeatForever(autoreverses: false)){
-                                        isRotating = 360.0
-                                    }
                             }
-                    }
-                }
-                .onAppear {
-                    Task {
-                        locationManager.requestLocation()
-                        // Lägg till logik här för att välja vilken temperatur som ska sparas
-                        if let firstWeatherData = feedModel.wData.first {
-                            let userDefaults = UserDefaults(suiteName: "group.by.temp")
-                            let temp: Double = firstWeatherData.current.temperature_2m
-                            userDefaults?.set(temp, forKey: "currentTemp")
-                            WidgetCenter.shared.reloadAllTimelines()
+                        .shadow(color: .red ,radius: 70, x: 60, y:60)
+                        .onAppear
+                        {
+                        withAnimation(.linear(duration: 0.5)
+                        .speed(0.01).repeatForever(autoreverses: false))
+                            {
+                                isRotating = 360.0
                             }
                         }
                     }
-                VStack {
-                    if let location = locationService.location {
-                        let startPosition = MapCameraPosition.region(
-                            MKCoordinateRegion(
-                                center: CLLocationCoordinate2D(latitude: location.coordinate.latitude, longitude: location.coordinate.longitude),
+                }
+                
+                .onAppear {
+                    Task {
+                        locationManager.requestLocation()
+                        if let firstWeatherData = feedModel.wData.first
+                        {
+                            let userDefaults = UserDefaults(suiteName: "group.by.temp")
+                            
+                            let temp: Double = firstWeatherData.current.temperature_2m
+                            
+                            userDefaults?.set(temp, forKey: "currentTemp")
+                            
+                            WidgetCenter.shared.reloadAllTimelines()
+                            
+                        }
+                    }
+                }
+                VStack
+                {
+                    
+                    if let location = locationService.location
+                    {
+                        let startPosition = MapCameraPosition.region( MKCoordinateRegion(center: CLLocationCoordinate2D(latitude: location.coordinate.latitude, longitude: location.coordinate.longitude),
                                 span: MKCoordinateSpan(latitudeDelta: 0.5, longitudeDelta: 0.5)
                             )
                         )
                         Map(initialPosition: startPosition)
-                            .mapStyle(.hybrid)
+                            .mapStyle(.hybrid).frame(width: 300, height: 300)
                             .onTapGesture { position in
                                 print("Tapped at \(position)")
                             }
-                    } else {
+                    } else
+                        {
                         Text("")
-                    }
-                }.clipShape(/*@START_MENU_TOKEN@*/Circle()/*@END_MENU_TOKEN@*/)
+                        }
+                }
+                .clipShape(/*@START_MENU_TOKEN@*/Circle()/*@END_MENU_TOKEN@*/)
                 .padding()
-                .onAppear {
+                .onAppear
+                {
                     locationService.requestLocation()
                 }
-                .refreshable {
+                .refreshable
+                {
                     locationService.requestLocation()
                 }
-            }.background(
-                LinearGradient(gradient: Gradient(colors: [.white, .blue]), startPoint: .top, endPoint: .bottom))
+            }
+            .background(
+                LinearGradient(gradient: Gradient(colors: [.white, .mint]), startPoint: .top, endPoint: .bottom))
             }
         }
     }
 
         
+
 #Preview {
     WeatherView()
 }
+
+ 
